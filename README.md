@@ -1,2 +1,1 @@
-# Lingora
-Gamified web platform for learning endangered cultural languages of Nepal. Built with FastAPI, React, and PostgreSQL.
+Lingora is a Duolingo-inspired language learning platform focused on preserving Nepal's indigenous languages through gamification, spaced repetition, and adaptive placement.

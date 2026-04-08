@@ -3,7 +3,6 @@ from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from core.config import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def create_access_token(data: dict):
     to_encode = data.copy()

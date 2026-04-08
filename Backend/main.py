@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from core.config import settings
 from fastapi.middleware.cors import CORSMiddleware
+from user.url import Router as UserRouter
 
 
 app = FastAPI(
@@ -10,6 +11,9 @@ app = FastAPI(
     redoc_url="/redocs" if settings.DEBUG else None,
     openapi_url="/openapi.json" if settings.DEBUG else None
 )
+
+
+app.include_router(UserRouter, tags=["User"])
 
 @app.get('/')
 async def root():

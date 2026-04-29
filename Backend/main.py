@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from core.config import settings
 from fastapi.middleware.cors import CORSMiddleware
 from user.url import Router as UserRouter
-
+from core.database import Base, engine
+from user import models  # VERY IMPORTANT
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -12,14 +13,15 @@ app = FastAPI(
     openapi_url="/openapi.json" if settings.DEBUG else None
 )
 
+Base.metadata.create_all(bind=engine)
 
 app.include_router(UserRouter, tags=["User"])
 
 @app.get('/')
 async def root():
     return {
-        "message": "Lingora - A Language Learning Platform  ",
+        "message": "Lingora - A Language Learning Platform",
         "version": settings.VERSION,
         "database": settings.DATABASE_URL,
-        "debug" : settings.DEBUG
+        "debug": settings.DEBUG
     }

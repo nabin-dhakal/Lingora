@@ -29,12 +29,12 @@ def Register(user: UserCreate, db : Session = Depends(get_db)):
 @Router.post("/login")
 def Login(user:UserLogin, db : Session = Depends(get_db)):
     
-    user = db.query(User).filter(User.email == user.email).first()
+    db_user = db.query(User).filter(User.email == user.email).first()
 
     if not user:
         raise HTTPException(status_code=400, detail="Invalid credentials")
     
-    if not verify_password(user.password, user.hashed_password):
+    if not verify_password(user.password, db_user.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid credentials")
     
     access_token = create_access_token(

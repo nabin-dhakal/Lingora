@@ -2,11 +2,11 @@ from pydantic import BaseModel
 from typing import List
 from datetime import datetime
 
-class LanguageBase(BaseModel):
+class CourseBase(BaseModel):
     name: str
     code: str
 
-class LanguageSchema(LanguageBase):
+class CourseSchema(CourseBase):
     id: int
 
     class Config:

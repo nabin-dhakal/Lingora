@@ -2,8 +2,9 @@ from fastapi import FastAPI
 from core.config import settings
 from fastapi.middleware.cors import CORSMiddleware
 from user.url import Router as UserRouter
+from langs.urls import router as LangsRouter
 from core.database import Base, engine
-from user import models  # VERY IMPORTANT
+from user import models
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -16,6 +17,7 @@ app = FastAPI(
 Base.metadata.create_all(bind=engine)
 
 app.include_router(UserRouter, tags=["User"])
+app.include_router(LangsRouter, tags=["Languages"])
 
 @app.get('/')
 async def root():

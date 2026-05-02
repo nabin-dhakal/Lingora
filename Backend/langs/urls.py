@@ -1,17 +1,30 @@
-from fastapi import APIRouter
-from .models import Language, Course, Lesson, Exercise
-from core.database import get_db
+from fastapi.routing import APIRouter, HTTPException
+from fastapi import Depends
 from sqlalchemy.orm import Session
 from typing import List
+from core.database import get_db
+from .models import Language, Course, Lesson, Exercise
+from .schema import LanguageSchema
 
 router = APIRouter(
-    prefix="/langs",
-    tags=["langs"],
+    prefix="/languages",
+    tags=["Languages"],
     responses={404: {"description": "Not found"}},
 )
 
 
-@router.get("/")
-async def getlangs(reqest: Request, db: Session = Depends(get_db)) -> List[Language]:
-    return db.query(Language).all()
-    
+@router.get("/", response_model=List[LanguageSchema])
+async def getlangs(db: Session = Depends(get_db)) -> List[Language]:
+    lang = db.query(Language).all()
+    if lang is None:
+        raise HTTPException(status_code=404, detail="Languages not found")
+    return lang
+
+
+
+@router.get("/{lang_id}", response_model=LanguageSchema)
+async def getlang(lang_id: int, db: Session = Depends(get_db)) -> Language:
+    lang = db.query(Language).filter(Language.id == lang_id).first()
+    if lang is None:
+        raise HTTPException(status_code=404, detail="Language not found")
+    return lang

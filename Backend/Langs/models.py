@@ -3,7 +3,7 @@ from datetime import datetime
 from uuid import UUID, uuid4
 from enum import Enum
 from sqlalchemy import Column, String, DateTime, Boolean
-from core.database import Base
+from Core.database import Base
 
 class Language(Base):
     __tablename__ = "languages"

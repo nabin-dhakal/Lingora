@@ -2,7 +2,7 @@ from fastapi.routing import APIRouter, HTTPException
 from fastapi import Depends
 from sqlalchemy.orm import Session
 from typing import List
-from core.database import get_db
+from Core.database import get_db
 from .models import Language, Course, Lesson, Exercise
 from .schema import LanguageSchema
 

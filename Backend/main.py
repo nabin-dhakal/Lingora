@@ -1,9 +1,13 @@
 from fastapi import FastAPI
-from core.config import settings
+from Core.config import settings
 from fastapi.middleware.cors import CORSMiddleware
-from user.url import Router as UserRouter
-from core.database import Base, engine
-from user import models  # VERY IMPORTANT
+from User.url import Router as UserRouter
+from Langs.urls import router as LangsRouter
+from Course.urls import router as CourseRouter
+from Lesson.urls import router as LessonRouter
+from Exercise.urls import router as ExerciseRouter
+from Core.database import Base, engine
+from User import models
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -16,6 +20,11 @@ app = FastAPI(
 Base.metadata.create_all(bind=engine)
 
 app.include_router(UserRouter, tags=["User"])
+app.include_router(LangsRouter, tags=["Languages"])
+app.include_router(CourseRouter, tags=["Courses"])
+app.include_router(LessonRouter, tags=["Lessons"])
+app.include_router(ExerciseRouter, tags=["Exercises"])
+
 
 @app.get('/')
 async def root():

@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, UUID, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 import uuid
-from core.database import Base
+from Core.database import Base
 
 
 class User(Base):

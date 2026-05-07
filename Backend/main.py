@@ -6,6 +6,7 @@ from Langs.urls import router as LangsRouter
 from Course.urls import router as CourseRouter
 from Lesson.urls import router as LessonRouter
 from Exercise.urls import router as ExerciseRouter
+from demo.demo import router as DemoRouter
 from Core.database import Base, engine
 from User import models
 
@@ -24,7 +25,7 @@ app.include_router(LangsRouter, tags=["Languages"])
 app.include_router(CourseRouter, tags=["Courses"])
 app.include_router(LessonRouter, tags=["Lessons"])
 app.include_router(ExerciseRouter, tags=["Exercises"])
-
+app.include_router(DemoRouter, tags=["Demo"])
 
 @app.get('/')
 async def root():

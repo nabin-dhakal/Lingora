@@ -1,21 +1,7 @@
-"""
-Sanskrit Dataset Loader for Saamayik Corpus
-
-This module handles loading and filtering the Saamayik English-Sanskrit parallel dataset.
-It is used ONLY during seeding, never at runtime.
-
-Usage:
-    from app.exercise.sanskrit_loader import load_sentences
-    
-    sentences = load_sentences(limit=150)
-    # Returns list of {"en": "...", "sa": "...", "difficulty": "..."}
-"""
-
 from datasets import load_dataset
 from typing import List, Dict, Optional
 import logging
 
-# Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -28,33 +14,11 @@ def load_sentences(
     streaming: bool = False,
     buffer_multiplier: float = 1.5
 ) -> List[Dict[str, str]]:
-    """
-    Load and filter sentences from Saamayik dataset.
-    
-    Args:
-        limit: Maximum number of sentences to return
-        max_en_words: Maximum English word count (filter)
-        max_sa_chars: Maximum Sanskrit character count (filter)
-        min_en_words: Minimum English word count (filter, avoid empty sentences)
-        streaming: If True, use streaming mode (memory efficient)
-        buffer_multiplier: Collect extra sentences before dedup to compensate for duplicates
-    
-    Returns:
-        List of dictionaries, each containing:
-            - en: English sentence (prompt)
-            - sa: Sanskrit sentence (correct answer)
-            - difficulty: "beginner", "intermediate", or "advanced"
-    
-    Raises:
-        ValueError: If not enough sentences found after filtering
-    """
     
     logger.info(f"Loading Saamayik dataset with limit={limit}, max_en_words={max_en_words}, max_sa_chars={max_sa_chars}")
     
-    # Calculate how many to collect before deduplication (oversample)
     collect_target = int(limit * buffer_multiplier)
     
-    # Load dataset (train split only)
     if streaming:
         logger.info("Using streaming mode (memory efficient)")
         dataset = load_dataset("acomquest/Saamayik", split="train", streaming=True)
@@ -62,24 +26,19 @@ def load_sentences(
         logger.info("Loading full dataset into memory")
         dataset = load_dataset("acomquest/Saamayik", split="train")
     
-    # Collect filtered sentences
     filtered_sentences = []
     
     for idx, item in enumerate(dataset):
-        # Stop when we have enough (plus buffer)
         if len(filtered_sentences) >= collect_target:
             logger.info(f"Reached collection target of {collect_target} sentences")
             break
         
-        # Extract English and Sanskrit
         en_text = item["translation"]["en"]
         sa_text = item["translation"]["sa"]
         
-        # Apply filters
         if not _passes_length_filter(en_text, sa_text, min_en_words, max_en_words, max_sa_chars):
             continue
         
-        # Passed all filters
         difficulty = _estimate_difficulty(en_text, sa_text, max_en_words, max_sa_chars)
         
         filtered_sentences.append({
@@ -88,19 +47,15 @@ def load_sentences(
             "difficulty": difficulty
         })
         
-        # Log progress periodically
         if len(filtered_sentences) % 50 == 0:
             logger.info(f"Collected {len(filtered_sentences)} sentences so far")
     
-    # Remove duplicates
     logger.info(f"Removing duplicates from {len(filtered_sentences)} sentences")
     unique_sentences = _remove_duplicates(filtered_sentences)
     logger.info(f"Removed {len(filtered_sentences) - len(unique_sentences)} duplicates")
     
-    # Truncate to exact limit
     result = unique_sentences[:limit]
     
-    # Check if we have enough
     if len(result) < limit:
         logger.warning(f"Only found {len(result)} sentences after filtering. Requested {limit}.")
         logger.warning(f"Consider relaxing filters (max_en_words, max_sa_chars) or reducing limit.")
@@ -116,19 +71,9 @@ def _passes_length_filter(
     max_en_words: int,
     max_sa_chars: int
 ) -> bool:
-    """
-    Check if sentence passes length-based filters.
-    
-    Returns:
-        True if sentence should be kept, False otherwise
-    """
-    # Count English words
     en_word_count = len(en_text.split())
-    
-    # Count Sanskrit characters
     sa_char_count = len(sa_text)
     
-    # Apply filters
     if en_word_count < min_en_words:
         return False
     if en_word_count > max_en_words:
@@ -140,12 +85,6 @@ def _passes_length_filter(
 
 
 def _remove_duplicates(sentences: List[Dict[str, str]]) -> List[Dict[str, str]]:
-    """
-    Remove duplicate English and Sanskrit sentences.
-    
-    Uses sets to track seen English and Sanskrit text.
-    If English OR Sanskrit sentence has been seen before, the pair is skipped.
-    """
     seen_en = set()
     seen_sa = set()
     unique = []
@@ -154,7 +93,6 @@ def _remove_duplicates(sentences: List[Dict[str, str]]) -> List[Dict[str, str]]:
         en_text = item["en"]
         sa_text = item["sa"]
         
-        # Skip if English or Sanskrit already seen
         if en_text in seen_en or sa_text in seen_sa:
             continue
         
@@ -171,17 +109,8 @@ def _estimate_difficulty(
     max_en_words: int,
     max_sa_chars: int
 ) -> str:
-    """
-    Estimate difficulty based on sentence length.
-    
-    Returns:
-        "beginner", "intermediate", or "advanced"
-    """
     en_word_count = len(en_text.split())
     sa_char_count = len(sa_text)
-    
-    # Beginner threshold: <= max_en_words and <= max_sa_chars (already filtered)
-    # But we can add intermediate level within those bounds
     
     if en_word_count <= 5 and sa_char_count <= 50:
         return "beginner"
@@ -192,15 +121,6 @@ def _estimate_difficulty(
 
 
 def get_statistics(sentences: List[Dict[str, str]]) -> Dict:
-    """
-    Get statistics about loaded sentences (useful for debugging).
-    
-    Args:
-        sentences: List returned by load_sentences()
-    
-    Returns:
-        Dictionary with counts, average lengths, difficulty distribution
-    """
     if not sentences:
         return {"error": "No sentences provided"}
     
@@ -222,24 +142,22 @@ def get_statistics(sentences: List[Dict[str, str]]) -> Dict:
     }
 
 
-# Optional: Quick test when run directly
-if __name__ == "__main__":
-    print("Testing sanskrit_loader.py")
-    print("=" * 50)
+def extract_vocabulary(sentences: List[Dict[str, str]]) -> List[Dict[str, any]]:
+    word_counts = {}
     
-    # Test with small limit
-    test_sentences = load_sentences(limit=10, streaming=True)
+    for item in sentences:
+        sa_text = item["sa"]
+        words = sa_text.split()
+        
+        for word in words:
+            cleaned = word.strip(".,!?;:()\"'")
+            if cleaned:
+                if cleaned in word_counts:
+                    word_counts[cleaned] += 1
+                else:
+                    word_counts[cleaned] = 1
     
-    print(f"\nLoaded {len(test_sentences)} sentences")
-    print("\nFirst 3 examples:")
+    result = [{"word": word, "frequency": count} for word, count in word_counts.items()]
+    result.sort(key=lambda x: x["frequency"], reverse=True)
     
-    for i, sent in enumerate(test_sentences[:3]):
-        print(f"\n{i+1}. EN: {sent['en']}")
-        print(f"   SA: {sent['sa']}")
-        print(f"   Difficulty: {sent['difficulty']}")
-    
-    print("\n" + "=" * 50)
-    print("Statistics:")
-    stats = get_statistics(test_sentences)
-    for key, value in stats.items():
-        print(f"  {key}: {value}")
+    return result

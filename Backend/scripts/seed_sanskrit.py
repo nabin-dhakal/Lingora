@@ -4,6 +4,7 @@ from exercise.models import Sentence, Vocabulary, Exercise
 from course.models import Course
 from lesson.models import Lesson
 from langs.models import Language
+from exercise.generator.exercise import ExerciseGenerator
 from typing import List, Dict
 
 
@@ -72,6 +73,24 @@ def save_sentences(db, sentences: List[Dict], lesson_id: str = None):
     print(f"Saved {new_count} new sentences")
     return new_count
 
+def create_exercises(db):
+    generator = ExerciseGenerator(db)
+    
+    lesson = db.query(Lesson).first()
+    sentences = db.query(Sentence).filter(Sentence.is_used == False).all()
+    vocabulary = db.query(Vocabulary).all()
+    
+    generator.generate_from_sentences(
+        lesson_id=lesson.id,
+        sentences=sentences[:20],
+        types=["translation", "reverse_translation", "fill_blank", "word_ordering"]
+    )
+    
+    generator.generate_from_vocabulary(
+        lesson_id=lesson.id,
+        words=vocabulary[:20], 
+        types=["mcq", "word_matching"]
+    )
 
 def save_vocabulary(db, vocab_list: List[Dict], limit: int = 100):
     new_count = 0
@@ -133,6 +152,8 @@ def seed_sanskrit_data():
         print("\nSaving vocabulary...")
         save_vocabulary(db, vocab_list, limit=100)
         
+        create_exercises(db)
+
         print("\n" + "=" * 50)
         print("Seeding Completed Successfully!")
         print("=" * 50)
@@ -149,6 +170,8 @@ def seed_sanskrit_data():
         raise
     finally:
         db.close()
+    
+
 
 
 if __name__ == "__main__":

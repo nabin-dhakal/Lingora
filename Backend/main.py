@@ -1,14 +1,14 @@
 from fastapi import FastAPI
-from Core.config import settings
+from core.config import settings
 from fastapi.middleware.cors import CORSMiddleware
-from User.url import Router as UserRouter
-from Langs.urls import router as LangsRouter
-from Course.urls import router as CourseRouter
-from Lesson.urls import router as LessonRouter
-from Exercise.urls import router as ExerciseRouter
+from user.url import Router as UserRouter
+from langs.urls import router as LangsRouter
+from course.urls import router as CourseRouter
+from lesson.urls import router as LessonRouter
+from exercise.urls import router as ExerciseRouter
 from demo.demo import router as DemoRouter
-from Core.database import Base, engine
-from User import models
+from core.database import Base, engine
+from user import models
 
 app = FastAPI(
     title=settings.PROJECT_NAME,

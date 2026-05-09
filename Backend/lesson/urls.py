@@ -1,7 +1,7 @@
 from fastapi.routing import APIRouter
 from fastapi import HTTPException, Depends
 from sqlalchemy.orm import Session
-from Core.database import get_db
+from core.database import get_db
 from .models import Lesson
 from .schema import LessonSchema
 from typing import List

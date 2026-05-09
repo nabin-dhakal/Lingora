@@ -3,7 +3,7 @@ from datetime import datetime
 from uuid import UUID, uuid4
 from enum import Enum
 from sqlalchemy import Column, String, DateTime, Boolean
-from Core.database import Base
+from core.database import Base
 
 class Exercise(Base):
     __tablename__ = "exercises"
@@ -45,6 +45,8 @@ class Vocabulary(Base):
         return self.word
     
 class Sentence(Base):
+    __tablename__ = "sentences"
+
     id = Column(String(36), primary_key=True, default=lambda: str(uuid4()), index=True)
     en = Column(String, nullable=False)
     sa = Column(String, nullable=False)

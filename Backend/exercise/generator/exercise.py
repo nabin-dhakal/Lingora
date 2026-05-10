@@ -67,7 +67,7 @@ class ExerciseGenerator:
     def _make_translation(self, sentence, lesson_id, index):
         return Exercise(
             question=sentence.en,
-            answer=sentence.sa,
+            answer=sentence.target,
             lesson_id=lesson_id,
             type="translation",
             order_index=index,
@@ -76,7 +76,7 @@ class ExerciseGenerator:
     
     def _make_reverse_translation(self, sentence, lesson_id, index):
         return Exercise(
-            question=sentence.sa,
+            question=sentence.target,
             answer=sentence.en,
             lesson_id=lesson_id,
             type="reverse_translation",
@@ -85,7 +85,7 @@ class ExerciseGenerator:
         )
     
     def _make_fill_blank(self, sentence, lesson_id, index):
-        words = sentence.sa.split()
+        words = sentence.target.split()
         if len(words) < 3:
             return None
         
@@ -104,7 +104,7 @@ class ExerciseGenerator:
         )
     
     def _make_word_ordering(self, sentence, lesson_id, index):
-        words = sentence.sa.split()
+        words = sentence.target.split()
         if len(words) < 3:
             return None
         
@@ -114,7 +114,7 @@ class ExerciseGenerator:
         
         return Exercise(
             question=f"{sentence.en}\n\nArrange correctly: {question}",
-            answer=sentence.sa,
+            answer=sentence.target,
             lesson_id=lesson_id,
             type="word_ordering",
             order_index=index,
@@ -122,7 +122,7 @@ class ExerciseGenerator:
         )
     
     def _make_error_correction(self, sentence, lesson_id, index):
-        words = sentence.sa.split()
+        words = sentence.target.split()
         if len(words) < 3:
             return None
         
@@ -132,7 +132,7 @@ class ExerciseGenerator:
         
         return Exercise(
             question=f"{sentence.en}\n\nCorrect the error: {incorrect}",
-            answer=sentence.sa,
+            answer=sentence.target,
             lesson_id=lesson_id,
             type="error_correction",
             order_index=index,

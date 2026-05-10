@@ -43,7 +43,7 @@ class Vocabulary(Base):
     is_active = Column(Boolean, default=True)
 
     def __repr__(self):
-        return f"<Vocabulary(word={self.word}, lesson_id={self.lesson_id})>"
+        return f"<Vocabulary(word={self.word})>"
     
     def __str__(self):
         return self.word
@@ -53,7 +53,7 @@ class Sentence(Base):
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid4()), index=True)
     en = Column(String, nullable=False)
-    sa = Column(String, nullable=False)
+    target = Column(String, nullable=False)
     difficulty = Column(String, nullable=False)
     is_used = Column(Boolean, default=False)
 

@@ -9,7 +9,6 @@ from typing import List, Dict
 
 
 def get_or_create_language(db, code: str, name: str):
-
     language = db.query(Language).filter_by(code=code).first()
     if not language:
         language = Language(code=code, name=name)
@@ -27,7 +26,7 @@ def get_or_create_course(db, language_id: str, title: str, description: str):
             title=title,
             description=description,
             language_id=language_id,
-            )
+        )
         db.add(course)
         db.commit()
         db.refresh(course)
@@ -56,13 +55,13 @@ def save_sentences(db, sentences: List[Dict], lesson_id: str = None):
     for sent in sentences:
         existing = db.query(Sentence).filter(
             Sentence.en == sent["en"],
-            Sentence.sa == sent["sa"]
+            Sentence.target == sent["sa"]  
         ).first()
         
         if not existing:
             new_sentence = Sentence(
                 en=sent["en"],
-                sa=sent["sa"],
+                target=sent["sa"],  
                 difficulty=sent.get("difficulty", "intermediate"),
                 is_used=False
             )
@@ -80,6 +79,10 @@ def create_exercises(db):
     sentences = db.query(Sentence).filter(Sentence.is_used == False).all()
     vocabulary = db.query(Vocabulary).all()
     
+    if not sentences:
+        print("No unused sentences available for exercise generation")
+        return
+    
     generator.generate_from_sentences(
         lesson_id=lesson.id,
         sentences=sentences[:20],
@@ -88,7 +91,7 @@ def create_exercises(db):
     
     generator.generate_from_vocabulary(
         lesson_id=lesson.id,
-        words=vocabulary[:20], 
+        words=vocabulary[:20],
         types=["mcq", "word_matching"]
     )
 
@@ -121,9 +124,10 @@ def seed_sanskrit_data():
     
     try:
         language = get_or_create_language(
-            db, 
-            code="sa", 
-            name="Sanskrit",         )
+            db,
+            code="sa",
+            name="Sanskrit",
+        )
         
         course = get_or_create_course(
             db,
@@ -152,6 +156,7 @@ def seed_sanskrit_data():
         print("\nSaving vocabulary...")
         save_vocabulary(db, vocab_list, limit=100)
         
+        print("\nCreating exercises...")
         create_exercises(db)
 
         print("\n" + "=" * 50)
@@ -170,8 +175,6 @@ def seed_sanskrit_data():
         raise
     finally:
         db.close()
-    
-
 
 
 if __name__ == "__main__":

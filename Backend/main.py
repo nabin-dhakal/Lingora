@@ -25,7 +25,6 @@ app.include_router(LangsRouter, tags=["Languages"])
 app.include_router(CourseRouter, tags=["Courses"])
 app.include_router(LessonRouter, tags=["Lessons"])
 app.include_router(ExerciseRouter, tags=["Exercises"])
-app.include_router(DemoRouter, tags=["Demo"])
 
 @app.get('/')
 async def root():

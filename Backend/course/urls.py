@@ -1,4 +1,4 @@
-from fastapi import  Depends, HTTPException
+from fastapi import  HTTPException, Depends
 from fastapi.routing import APIRouter
 from sqlalchemy.orm import Session
 from core.database import get_db
@@ -17,7 +17,7 @@ router = APIRouter(
 async def get_courses(db: Session = Depends(get_db)) -> List[Course]:
     courses = db.query(Course).all()
     if courses is None:
-        raise HttpException(status_code=404, detail="Courses not found")
+        raise HTTPException(status_code=404, detail="Courses not found")
     return courses
 
 

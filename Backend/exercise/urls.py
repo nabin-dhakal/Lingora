@@ -29,7 +29,7 @@ async def get_exercise(exercise_id: int, db: Session = Depends(get_db)) -> Exerc
         raise HTTPException(status_code=404, detail="Exercise not found")
     return exercise
 
-@router.post('/exercises/{exercise_id}/submit', response_model=ExerciseSubmissionSchema)
+@router.post('/{exercise_id}/submit', response_model=ExerciseSubmissionSchema)
 async def submit_exercise(exercise_id: str, submission: ExerciseSubmissionSchema, db: Session = Depends(get_db)) -> ExerciseSubmissionResponse:
     exercise = db.query(Exercise).filter(Exercise.id == exercise_id).first()
     if exercise is None:

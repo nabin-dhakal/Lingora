@@ -17,6 +17,20 @@ app = FastAPI(
     redoc_url="/redocs" if settings.DEBUG else None,
     openapi_url="/openapi.json" if settings.DEBUG else None
 )
+origins = [
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 Base.metadata.create_all(bind=engine)
 
@@ -25,7 +39,6 @@ app.include_router(LangsRouter, tags=["Languages"])
 app.include_router(CourseRouter, tags=["Courses"])
 app.include_router(LessonRouter, tags=["Lessons"])
 app.include_router(ExerciseRouter, tags=["Exercises"])
-app.include_router(DemoRouter, tags=["Demo"])
 
 @app.get('/')
 async def root():

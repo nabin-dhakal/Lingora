@@ -1,13 +1,13 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 
 class CourseBase(BaseModel):
-    name: str
-    code: str
+    name: Optional[str] = None
+    code: Optional[str] = None
 
 class CourseSchema(CourseBase):
-    id: int
+    id: str
 
     class Config:
         from_attributes = True

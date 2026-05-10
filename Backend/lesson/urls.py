@@ -18,3 +18,10 @@ async def get_lessons(db: Session = Depends(get_db)) -> List[Lesson]:
     if lessons is None:
         raise HTTPException(status_code=404, detail="Lessons not found")
     return lessons
+
+@router.get('/{lesson_id}', response_model=LessonSchema)
+async def get_lesson(lesson_id: str, db: Session = Depends(get_db)) -> Lesson:
+    lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
+    if lesson is None:
+        raise HTTPException(status_code=404, detail="Lesson not found")
+    return lesson

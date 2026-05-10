@@ -2,8 +2,8 @@ from typing import List, Optional
 from datetime import datetime
 from uuid import UUID, uuid4
 from enum import Enum
-from sqlalchemy import Column, String, DateTime, Boolean
-from Core.database import Base
+from sqlalchemy import Column, String, DateTime, Boolean, Integer, ForeignKey
+from core.database import Base
 
 class Exercise(Base):
     __tablename__ = "exercises"
@@ -12,6 +12,10 @@ class Exercise(Base):
     question = Column(String, nullable=False)
     answer = Column(String, nullable=True)
     lesson_id = Column(String(36), nullable=False)
+    choices = Column(String, nullable=True)
+    type = Column(String, nullable=False)
+
+    order_index = Column(Integer, nullable=False, default=0)
 
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -39,15 +43,17 @@ class Vocabulary(Base):
     is_active = Column(Boolean, default=True)
 
     def __repr__(self):
-        return f"<Vocabulary(word={self.word}, lesson_id={self.lesson_id})>"
+        return f"<Vocabulary(word={self.word})>"
     
     def __str__(self):
         return self.word
     
 class Sentence(Base):
+    __tablename__ = "sentences"
+
     id = Column(String(36), primary_key=True, default=lambda: str(uuid4()), index=True)
     en = Column(String, nullable=False)
-    sa = Column(String, nullable=False)
+    target = Column(String, nullable=False)
     difficulty = Column(String, nullable=False)
     is_used = Column(Boolean, default=False)
 

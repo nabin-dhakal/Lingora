@@ -143,21 +143,31 @@ def get_statistics(sentences: List[Dict[str, str]]) -> Dict:
 
 
 def extract_vocabulary(sentences: List[Dict[str, str]]) -> List[Dict[str, any]]:
-    word_counts = {}
+    word_map = {}
     
     for item in sentences:
+        en_text = item["en"]
         sa_text = item["sa"]
-        words = sa_text.split()
         
-        for word in words:
-            cleaned = word.strip(".,!?;:()\"'")
-            if cleaned:
-                if cleaned in word_counts:
-                    word_counts[cleaned] += 1
-                else:
-                    word_counts[cleaned] = 1
+        en_words = en_text.split()
+        sa_words = sa_text.split()
+        
+        min_length = min(len(en_words), len(sa_words))
+        
+        for i in range(min_length):
+            sa_word = sa_words[i].strip(".,!?;:()\"'")
+            en_word = en_words[i].strip(".,!?;:()\"'")
+            
+            if sa_word and en_word:
+                if sa_word not in word_map:
+                    word_map[sa_word] = {
+                        "word": sa_word,
+                        "translation": en_word,
+                        "frequency": 0
+                    }
+                word_map[sa_word]["frequency"] += 1
     
-    result = [{"word": word, "frequency": count} for word, count in word_counts.items()]
+    result = list(word_map.values())
     result.sort(key=lambda x: x["frequency"], reverse=True)
     
     return result

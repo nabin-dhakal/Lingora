@@ -1,7 +1,7 @@
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
-from Core.config import settings
+from core.config import settings
 
 
 def create_access_token(data: dict):

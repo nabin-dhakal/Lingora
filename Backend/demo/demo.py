@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from typing import List, Dict, Optional
 
 # Create router
-router = APIRouter(prefix="/demo", tags=["demo"])
+router = APIRouter(prefix="/demo", tags=["Demo"])
 
 # Hardcoded exercises (in-memory, no database)
 EXERCISES = {

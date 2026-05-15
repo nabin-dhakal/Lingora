@@ -1,25 +1,19 @@
-import React from "react";
-import {
-  SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  Dimensions,
-} from "react-native";
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import LessonpreviewModal from '../components/LessonpreviewModal';
 
-const { width } = Dimensions.get("window");
+const { width } = Dimensions.get('window');
 
 const lessons = [
-  { id: 1, completed: true, locked: false },
-  { id: 2, completed: true, locked: false },
-  { id: 3, completed: false, locked: false },
-  { id: 4, completed: false, locked: true },
-  { id: 5, completed: false, locked: true },
-  { id: 6, completed: false, locked: true },
-  { id: 7, completed: false, locked: true },
-  { id: 8, completed: false, locked: true },
+  { id: 1, title: 'Basics 1', description: 'Learn basic greetings', completed: true, locked: false },
+  { id: 2, title: 'Basics 2', description: 'Numbers and colors', completed: true, locked: false },
+  { id: 3, title: 'Phrases', description: 'Common phrases', completed: false, locked: false },
+  { id: 4, title: 'Food', description: 'Food vocabulary', completed: false, locked: true },
+  { id: 5, title: 'Animals', description: 'Animal names', completed: false, locked: true },
+  { id: 6, title: 'Family', description: 'Family members', completed: false, locked: true },
+  { id: 7, title: 'Clothing', description: 'Clothing items', completed: false, locked: true },
+  { id: 8, title: 'Weather', description: 'Weather terms', completed: false, locked: true },
 ];
 
 const getPosition = (index) => {
@@ -27,188 +21,139 @@ const getPosition = (index) => {
   return positions[index % positions.length];
 };
 
-const LessonNode = ({ item, index }) => {
-  const bgColor = item.locked
-    ? "#d9d9d9"
-    : item.completed
-    ? "#58CC02"
-    : "#1CB0F6";
+const HomeScreen = () => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedLesson, setSelectedLesson] = useState(null);
+
+  const handleLessonPress = (lesson) => {
+    if (!lesson.locked) {
+      setSelectedLesson(lesson);
+      setModalVisible(true);
+    }
+  };
+
+  const renderLessonNode = ({ item, index }) => {
+    const bgColor = item.locked
+      ? '#d9d9d9'
+      : item.completed
+      ? '#58CC02'
+      : '#1CB0F6';
+
+    let iconName = 'star';
+    let iconColor = '#fff';
+    if (item.locked) {
+      iconName = 'lock-closed';
+      iconColor = '#999';
+    } else if (item.completed) {
+      iconName = 'checkmark';
+      iconColor = '#fff';
+    }
+
+    return (
+      <View style={[styles.nodeWrapper, { marginLeft: width / 2 + getPosition(index) - 45 }]}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          style={[styles.node, { backgroundColor: bgColor }]}
+          onPress={() => handleLessonPress(item)}
+        >
+          <Ionicons name={iconName} size={34} color={iconColor} />
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   return (
-    <View
-      style={[
-        styles.nodeWrapper,
-        { marginLeft: width / 2 + getPosition(index) - 45 },
-      ]}
-    >
-      <TouchableOpacity
-        activeOpacity={0.8}
-        style={[styles.node, { backgroundColor: bgColor }]}
-      >
-        <Text style={styles.nodeEmoji}>
-          {item.locked ? "🔒" : item.completed ? "✓" : "⭐"}
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
-
-export default function App() {
-  return (
-    <SafeAreaView style={styles.container}>
-      {/* HEADER */}
+    <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerItem}>
-          <Text style={styles.headerEmoji}>🔥</Text>
+          <Ionicons name="flame" size={22} color="#FF9600" />
           <Text style={styles.headerText}>14</Text>
         </View>
-
         <View style={styles.headerItem}>
-          <Text style={styles.headerEmoji}>💎</Text>
+          <Ionicons name="diamond" size={22} color="#1CB0F6" />
           <Text style={styles.headerText}>350</Text>
         </View>
-
         <View style={styles.headerItem}>
-          <Text style={styles.headerEmoji}>❤️</Text>
+          <Ionicons name="heart" size={22} color="#FF4B4B" />
           <Text style={styles.headerText}>5</Text>
         </View>
       </View>
 
-      {/* TITLE */}
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>Sankrit Basics</Text>
-        <Text style={styles.subtitle}>
-          Continue your learning journey
-        </Text>
+        <Text style={styles.title}>Sanskrit Basics</Text>
+        <Text style={styles.subtitle}>Continue your learning journey</Text>
       </View>
 
-      {/* LESSON PATH */}
       <FlatList
         data={lessons}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingVertical: 40,
-          paddingBottom: 120,
-        }}
-        renderItem={({ item, index }) => (
-          <LessonNode item={item} index={index} />
-        )}
+        contentContainerStyle={{ paddingVertical: 40, paddingBottom: 120 }}
+        renderItem={renderLessonNode}
       />
 
-      {/* BOTTOM BUTTON */}
-      <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.startButton}>
-          <Text style={styles.startButtonText}>CONTINUE</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      {selectedLesson && (
+        <LessonpreviewModal
+          visible={modalVisible}
+          lesson={selectedLesson}
+          onClose={() => setModalVisible(false)}
+        />
+      )}
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F7F7F7",
+    backgroundColor: '#F7F7F7',
   },
-
   header: {
-    flexDirection: "row",
-    justifyContent: "space-around",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     paddingVertical: 18,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderColor: "#eee",
+    borderColor: '#eee',
   },
-
   headerItem: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-
-  headerEmoji: {
-    fontSize: 22,
-    marginRight: 6,
-  },
-
   headerText: {
     fontSize: 18,
-    fontWeight: "700",
-    color: "#444",
+    fontWeight: '700',
+    color: '#444',
+    marginLeft: 6,
   },
-
   titleContainer: {
     padding: 20,
   },
-
   title: {
     fontSize: 30,
-    fontWeight: "800",
-    color: "#333",
+    fontWeight: '800',
+    color: '#333',
   },
-
   subtitle: {
     fontSize: 16,
-    color: "#777",
+    color: '#777',
     marginTop: 5,
   },
-
   nodeWrapper: {
     marginVertical: 18,
   },
-
   node: {
     width: 90,
     height: 90,
     borderRadius: 45,
-    justifyContent: "center",
-    alignItems: "center",
-
-    shadowColor: "#000",
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOpacity: 0.12,
     shadowRadius: 8,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-
+    shadowOffset: { width: 0, height: 4 },
     elevation: 6,
   },
-
-  nodeEmoji: {
-    fontSize: 34,
-    color: "#fff",
-    fontWeight: "bold",
-  },
-
-  bottomBar: {
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-    right: 20,
-  },
-
-  startButton: {
-    backgroundColor: "#58CC02",
-    paddingVertical: 18,
-    borderRadius: 18,
-    alignItems: "center",
-
-    shadowColor: "#58CC02",
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
-
-    elevation: 8,
-  },
-
-  startButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "800",
-    letterSpacing: 1,
-  },
 });
+
+export default HomeScreen;

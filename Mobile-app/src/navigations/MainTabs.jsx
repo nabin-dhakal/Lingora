@@ -2,7 +2,8 @@ import IonIcons from '@expo/vector-icons/Ionicons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import HomeScreen from '../screens/HomeScreen';
-
+import ProfileScreen from '../screens/ProfileScreen';
+import LeaderboardScreen from '../screens/LeaderboardScreen';
 
 const MainTabs = () => {
     const Tab = createBottomTabNavigator();
@@ -29,6 +30,8 @@ const MainTabs = () => {
                 })}
             >
                 <Tab.Screen name="Home" component={HomeScreen} />
+                <Tab.Screen name="Leaderboard" component={LeaderboardScreen} />
+                <Tab.Screen name="Profile" component={ProfileScreen} />
             </Tab.Navigator>
     );
 };

@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  SafeAreaView,
   View,
   Text,
   StyleSheet,
@@ -55,7 +54,7 @@ const LessonNode = ({ item, index }) => {
 
 export default function App() {
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerItem}>
           <Text style={styles.headerEmoji}>🔥</Text>
@@ -94,7 +93,7 @@ export default function App() {
       />
 
 
-    </SafeAreaView>
+    </View>
   );
 }
 

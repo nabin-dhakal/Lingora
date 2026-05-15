@@ -56,7 +56,6 @@ const LessonNode = ({ item, index }) => {
 export default function App() {
   return (
     <SafeAreaView style={styles.container}>
-      {/* HEADER */}
       <View style={styles.header}>
         <View style={styles.headerItem}>
           <Text style={styles.headerEmoji}>🔥</Text>
@@ -74,7 +73,6 @@ export default function App() {
         </View>
       </View>
 
-      {/* TITLE */}
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Sankrit Basics</Text>
         <Text style={styles.subtitle}>
@@ -82,7 +80,6 @@ export default function App() {
         </Text>
       </View>
 
-      {/* LESSON PATH */}
       <FlatList
         data={lessons}
         keyExtractor={(item) => item.id.toString()}
@@ -96,7 +93,6 @@ export default function App() {
         )}
       />
 
-      {/* BOTTOM BUTTON */}
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.startButton}>
           <Text style={styles.startButtonText}>CONTINUE</Text>

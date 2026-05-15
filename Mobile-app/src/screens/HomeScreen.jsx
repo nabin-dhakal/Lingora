@@ -93,11 +93,7 @@ export default function App() {
         )}
       />
 
-      <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.startButton}>
-          <Text style={styles.startButtonText}>CONTINUE</Text>
-        </TouchableOpacity>
-      </View>
+
     </SafeAreaView>
   );
 }
